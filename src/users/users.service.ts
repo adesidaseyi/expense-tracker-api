@@ -10,6 +10,7 @@ export class UserService {
     async findAllUsers() {
         const user = await this.userRepository.find({
             select: { 
+                id: true,
                 email: true,
                 firstName: true,
                 lastName: true,
@@ -24,6 +25,7 @@ export class UserService {
             const user = await this.userRepository.findOne({
                 where: { id: userId },
                 select: { 
+                    id: true,
                     email: true,
                     firstName: true,
                     lastName: true,

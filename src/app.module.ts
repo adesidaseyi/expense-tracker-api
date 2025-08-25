@@ -6,6 +6,8 @@ import { AuthModule } from './iam/authentication/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/entities/user.entity';
+import { CategoriesModule } from './categories/categories.module';
+import { Category } from './categories/entities/category.entity';
 
 @Module({
   imports: [
@@ -18,11 +20,12 @@ import { User } from './users/entities/user.entity';
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
       //autoLoadEntities: true,
-      entities: [User],
+      entities: [User, Category],
       synchronize: true // set to false in prod env!
     }),
     UsersModule,
-    AuthModule
+    AuthModule,
+    CategoriesModule
   ],
   controllers: [AppController],
   providers: [AppService],
