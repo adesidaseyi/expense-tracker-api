@@ -8,24 +8,27 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/entities/user.entity';
 import { CategoriesModule } from './categories/categories.module';
 import { Category } from './categories/entities/category.entity';
+import { ExpensesModule } from './expenses/expenses.module';
+import { Expense } from './expenses/entities/expense.entity';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true, }),
+    ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
-      type: "postgres",
+      type: 'postgres',
       host: process.env.DATABASE_HOST,
       port: +process.env.DATABASE_PORT!,
       username: process.env.DATABASE_USER,
       password: process.env.DATABASE_PASSWORD,
       database: process.env.DATABASE_NAME,
       //autoLoadEntities: true,
-      entities: [User, Category],
-      synchronize: true // set to false in prod env!
+      entities: [User, Category, Expense],
+      synchronize: true, // set to false in prod env!
     }),
     UsersModule,
     AuthModule,
-    CategoriesModule
+    CategoriesModule,
+    ExpensesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
