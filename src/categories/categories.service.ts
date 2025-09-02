@@ -26,22 +26,23 @@ export class CategoriesService {
   ): Promise<IResponse> {
     try {
       const foundUser = await this.usersService.findUserId(userId);
-      const foundCat = await this.findCategoryByName(
-        newCategoryDto.name,
+      const foundCategory = await this.findCategoryByName(
+        newCategoryDto.name.toLowerCase(),
         userId,
       );
-      if (foundCat) {
+      if (foundCategory) {
         throw new ConflictException('Category name already exists');
       }
 
-      const savedCate = await this.categoryRepository.save({
-        name: newCategoryDto.name,
+      const savedCategory = await this.categoryRepository.save({
+        name: newCategoryDto.name.toLowerCase(),
         createdBy: foundUser,
       });
+      savedCategory.name = this.toTitleCase(savedCategory.name);
       return {
         statusCode: HttpStatus.CREATED,
         message: 'Successfully saved category',
-        data: savedCate,
+        data: savedCategory,
       };
     } catch (err) {
       throw err;
@@ -55,6 +56,9 @@ export class CategoriesService {
         name: true,
         createdAt: true,
       },
+    });
+    allCategories.forEach((category) => {
+      category.name = this.toTitleCase(category.name);
     });
     return {
       statusCode: HttpStatus.OK,
@@ -84,8 +88,9 @@ export class CategoriesService {
 
       const updatedCategory = await this.categoryRepository.save({
         id: category.id,
-        name: name || category.name,
+        name: name.toLowerCase() || category.name,
       });
+      updatedCategory.name = this.toTitleCase(updatedCategory.name);
       return {
         statusCode: HttpStatus.OK,
         message: 'Successfuly updated Category',
@@ -105,6 +110,7 @@ export class CategoriesService {
         throw new NotFoundException('Category not found');
       }
       const deletedCategory = await this.categoryRepository.remove(category);
+      deletedCategory.name = this.toTitleCase(deletedCategory.name);
       return {
         statusCode: HttpStatus.OK,
         message: 'Successfully deleted category',
@@ -141,5 +147,10 @@ export class CategoriesService {
     } catch (err) {
       throw err;
     }
+  }
+
+  toTitleCase(str: string): string {
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1);
   }
 }
