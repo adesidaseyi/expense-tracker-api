@@ -10,6 +10,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { Category } from './categories/entities/category.entity';
 import { ExpensesModule } from './expenses/expenses.module';
 import { Expense } from './expenses/entities/expense.entity';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { Expense } from './expenses/entities/expense.entity';
     AuthModule,
     CategoriesModule,
     ExpensesModule,
+    ReportsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

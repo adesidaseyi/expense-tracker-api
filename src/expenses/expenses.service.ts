@@ -5,9 +5,10 @@ import { UpdateExpenseDto } from './dto/update-expense.dto';
 import { UserService } from 'src/users/users.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Expense } from './entities/expense.entity';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { CategoriesService } from 'src/categories/categories.service';
 import { IResponse } from 'src/response.interface';
+import { MonthQueryDto } from 'src/reports/dto/month-query.dto';
 
 @Injectable()
 export class ExpensesService {
@@ -44,9 +45,12 @@ export class ExpensesService {
     }
   }
 
-  async getAllExpenses(userId: number, queryDto: QueryDto): Promise<IResponse> {
+  async getAllExpenses(
+    userId: number,
+    queryDto?: QueryDto,
+  ): Promise<IResponse> {
     try {
-      const { limit, page, order_spent_at, order_amount } = queryDto;
+      const { limit, page, order_spent_at, order_amount } = queryDto || {};
       const expenses = await this.expenseRepository.find({
         where: { user: { id: userId } },
         relations: { category: true },
@@ -59,6 +63,24 @@ export class ExpensesService {
         message: 'Successfully retrieved all expenses',
         data: expenses,
       };
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async getMonthlyExpenses(userId: number, monthQueryDto: MonthQueryDto) {
+    try {
+      const [year, month] = monthQueryDto.month.split('-');
+      const startDate = new Date(Number(year), Number(month) - 1, 1);
+      const endDate = new Date(Number(year), Number(month), 0);
+      const expenses = await this.expenseRepository.find({
+        where: {
+          user: { id: userId },
+          spentAt: Between(startDate, endDate),
+        },
+        relations: { category: true },
+      });
+      return expenses;
     } catch (err) {
       throw err;
     }
